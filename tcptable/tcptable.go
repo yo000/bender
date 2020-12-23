@@ -57,7 +57,7 @@ func CreateExecutor(cnx *net.Conn, responseValidator ResponseValidator) bender.R
 
 	return func(_ int64, request interface{}) (interface{}, error) {
 		req := request.(*TcpTableRequest)
-		cnx, err = net.Dial("tcp", req.EndPoint)
+		cnx, err := net.Dial("tcp", req.EndPoint)
 		if err != nil {
 			return nil, err
 		}
