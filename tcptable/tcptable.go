@@ -57,7 +57,7 @@ func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor 
 		if err != nil {
 			return nil, err
 		}
-		reqStr := fmt.Sprintf("get %s\n", req.Request)
+		reqStr := fmt.Sprintf("get %s\r\n", req.Request)
 		_, err = cnx.Write([]byte(reqStr))
 		if err != nil {
 			cnx.Close()
