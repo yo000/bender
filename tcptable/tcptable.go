@@ -52,7 +52,7 @@ type ResponseValidator func(request interface{}, resp []byte) error
 // CreateExecutor creates an HTTP request executor.
 func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor {
 	return func(_ int64, request interface{}) (interface{}, error) {
-		req := request.(*Request)
+		req := request.(Request)
 		cnx, err := net.Dial("tcp", req.EndPoint)
 		if err != nil {
 			return nil, err
