@@ -19,10 +19,11 @@ limitations under the License.
 //       The TCP map class implements a very simple protocol: the client sends a
 //       request, and the server sends one reply. Requests and replies are  sent
 //       as  one  line of ASCII text, terminated by the ASCII newline character.
-//       Request and reply parameters (see below) are separated by whitespace. 
+//       Request and reply parameters (see below) are separated by whitespace.
 package tcpTable
 
 import (
+	"fmt"
 	"net"
 
 	"github.com/pinterest/bender"
@@ -40,11 +41,10 @@ import (
 //       least-significant  octets,  or  email  addresses without the localpart,
 //       address extension or domain portion. This behavior is also  found  with
 //       cidr:, pcre:, and regexp: tables.
-type TcpTableRequest struct {
+type Request struct {
 	EndPoint string
 	Request  string
 }
-
 
 // ResponseValidator validates a TCP response.
 type ResponseValidator func(request interface{}, resp []byte) error
@@ -52,17 +52,18 @@ type ResponseValidator func(request interface{}, resp []byte) error
 // CreateExecutor creates an HTTP request executor.
 func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor {
 	return func(_ int64, request interface{}) (interface{}, error) {
-		req := request.(*TcpTableRequest)
+		req := request.(*Request)
 		cnx, err := net.Dial("tcp", req.EndPoint)
 		if err != nil {
 			return nil, err
 		}
 		defer cnx.Close()
-		_, err = cnx.Write(append("get ", append([]byte(req.Request), '\n')))
+		reqStr := fmt.Sprintf("get %s\n", req.Request)
+		_, err = cnx.Write([]byte(reqStr))
 		if err != nil {
 			return nil, err
 		}
-		resp = make([]byte, 256)
+		resp := make([]byte, 256)
 		_, err = cnx.Read(resp)
 		if err != nil {
 			return nil, err
@@ -74,4 +75,3 @@ func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor 
 		return resp, nil
 	}
 }
-
