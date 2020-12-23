@@ -54,27 +54,26 @@ func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor 
 	return func(_ int64, request interface{}) (interface{}, error) {
 		req := request.(Request)
 		cnx, err := net.Dial("tcp", req.EndPoint)
+		defer cnx.Close()
 		if err != nil {
 			return nil, err
 		}
 		reqStr := fmt.Sprintf("get %s\r\n", req.Request)
 		_, err = cnx.Write([]byte(reqStr))
 		if err != nil {
-			cnx.Close()
 			return nil, err
 		}
 		resp := make([]byte, 256)
-		_, err = cnx.Read(resp)
+		readLen, err := cnx.Read(resp)
 		if err != nil {
-			cnx.Close()
 			return nil, err
 		}
+		// Truncate and remove '\r\n'
+		resp = resp[:readLen-2]
 		err = responseValidator(request, resp)
 		if err != nil {
-			cnx.Close()
 			return nil, err
 		}
-		cnx.Close()
 		return resp, nil
 	}
 }
