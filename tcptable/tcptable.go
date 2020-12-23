@@ -50,17 +50,14 @@ type TcpTableRequest struct {
 type ResponseValidator func(request interface{}, resp []byte) error
 
 // CreateExecutor creates an HTTP request executor.
-func CreateExecutor(cnx *net.Conn, responseValidator ResponseValidator) bender.RequestExecutor {
-	if cnx == nil {
-		cnx = &net.Conn{}
-	}
-
+func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor {
 	return func(_ int64, request interface{}) (interface{}, error) {
 		req := request.(*TcpTableRequest)
 		cnx, err := net.Dial("tcp", req.EndPoint)
 		if err != nil {
 			return nil, err
 		}
+		defer cnx.Close()
 		resp, err := cnx.Write(append([]byte(req.Request), '\n'))
 		if err != nil {
 			return nil, err
