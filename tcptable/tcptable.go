@@ -58,8 +58,13 @@ func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor 
 			return nil, err
 		}
 		defer cnx.Close()
-		resp, err := cnx.Write(append([]byte(req.Request), '\n'))
+		_, err := cnx.Write(append("get ", append([]byte(req.Request), '\n')))
 		if err != nil {
+			return nil, err
+		}
+		resp = make([]byte, 256)
+		_, err := cnx.Read(resp)
+		if err != nil [
 			return nil, err
 		}
 		err = responseValidator(request, resp)
