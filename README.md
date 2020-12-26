@@ -1,3 +1,6 @@
+This fork add a [tcp_table](http://www.postfix.org/tcp_table.5.html) protocol support to bender.  
+You can use it with import "github.com/yo000/bender/tcptable"  
+
 Bender
 ======
 
