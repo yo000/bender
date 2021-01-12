@@ -58,7 +58,7 @@ func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor 
 		if err != nil {
 			return nil, err
 		}
-		reqStr := fmt.Sprintf("get %s\r\n", req.Request)
+		reqStr := fmt.Sprintf("get %s\n", req.Request)
 		_, err = cnx.Write([]byte(reqStr))
 		if err != nil {
 			return nil, err
@@ -68,8 +68,8 @@ func CreateExecutor(responseValidator ResponseValidator) bender.RequestExecutor 
 		if err != nil {
 			return nil, err
 		}
-		// Truncate and remove '\r\n'
-		resp = resp[:readLen-2]
+		// Truncate and remove '\n'
+		resp = resp[:readLen-1]
 		err = responseValidator(request, resp)
 		if err != nil {
 			return nil, err
