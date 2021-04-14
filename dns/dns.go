@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/miekg/dns"
-	"github.com/pinterest/bender"
+	"github.com/yo000/bender"
 )
 
 // ResponseValidator validates a DNS response.
